@@ -1,0 +1,49 @@
+version: '3.4'
+x-common:
+  &common
+  image: erikap/ruby-sinatra
+  volumes:
+    - .:/usr/src/app
+  networks:
+    mysensors:
+
+services:
+  airSensor:
+    << : *common
+    environment:
+      MAIN_APP_FILE: products/airSensor.rb
+      NAME: "My air 1"
+  dimmerBox:
+    << : *common
+    environment:
+      MAIN_APP_FILE: products/dimmerBox.rb
+      NAME: "My dimmer 1"
+  tempSensor:
+    << : *common
+    environment:
+      MAIN_APP_FILE: products/tempSensor.rb
+      NAME: "My temp 1"
+  wLightBox:
+    << : *common
+    environment:
+      MAIN_APP_FILE: products/wLightBox.rb
+      NAME: "My light 1"
+  saunaBox:
+    << : *common
+    environment:
+      MAIN_APP_FILE: products/saunaBox.rb
+      NAME: "My sauna 1"
+  shutterBox:
+    << : *common
+    environment:
+      MAIN_APP_FILE: products/shutterBox.rb
+      NAME: "My shutter1"
+  gateBox:
+    << : *common
+    environment:
+      MAIN_APP_FILE: products/gateBox.rb
+      NAME: "My gatebox 1"
+
+networks:
+  mysensors:
+    external: true
