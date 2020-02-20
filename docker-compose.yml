@@ -43,6 +43,26 @@ services:
     environment:
       MAIN_APP_FILE: products/gateBox.rb
       NAME: "My gatebox 1"
+  gateController:
+    << : *common
+    environment:
+      MAIN_APP_FILE: products/gateController.rb
+      NAME: "My gateController 1"
+  wLightBoxS:
+    << : *common
+    environment:
+      MAIN_APP_FILE: products/wLightBoxS.rb
+      NAME: "My lightBoxS 1"
+  switchBox:
+    << : *common
+    environment:
+      MAIN_APP_FILE: products/switchBox.rb
+      NAME: "My switchBox 1"
+  switchBoxD:
+    << : *common
+    environment:
+      MAIN_APP_FILE: products/switchBoxD.rb
+      NAME: "My switchBoxD 1"
 
 networks:
   blebox_sensors:
