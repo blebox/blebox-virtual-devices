@@ -5,7 +5,7 @@ x-common:
   volumes:
     - .:/usr/src/app
   networks:
-    mysensors:
+    blebox_sensors:
 
 services:
   airSensor:
@@ -45,5 +45,5 @@ services:
       NAME: "My gatebox 1"
 
 networks:
-  mysensors:
+  blebox_sensors:
     external: true
