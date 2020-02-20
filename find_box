@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -o pipefail
+set -eu
+
+[ -n "$1" ] || { echo >&2 "Usage: $(basename $0) <product_name>"; exit 1; }
+
+name="$1"
+
+docker network inspect blebox_sensors | jq ".[0][\"Containers\"][] | select(.Name | contains(\"$name\")) | .IPv4Address" | cut -d'"' -f2-|cut -d/ -f1
