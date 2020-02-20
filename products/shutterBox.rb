@@ -1,34 +1,18 @@
 # frozen_string_literal: true
 
-require 'sinatra'
-require 'sinatra/json'
-require 'json'
+require 'singleton'
 
-SERVER = `/sbin/ip route`.lines[-1].split(' ')[-1]
-set :port, 80
-
-ID = '6a3e37e750b8'
-TYPE = 'shutterBox'
-STATE_PATH = '/api/shutter/state'
-API_LEVEL = '20180604'
-
-STDERR.puts "#{TYPE} at #{SERVER}"
+require_relative '../app'
 
 class State
-  attr_reader :start
+  include Singleton
 
   attr_accessor :desired
   attr_reader :current
 
   def initialize
-    @start = Time.now.to_i
-
     @current = 0
     @desired = 0
-  end
-
-  def uptime_seconds
-    Time.now.to_i - start
   end
 
   def tick
@@ -37,31 +21,53 @@ class State
   end
 end
 
-def state
-  $state ||= State.new
-end
+class MyApp < App
+  class << self
+    def state_url
+      '/api/shutter/state'
+    end
 
-get '/api/device/uptime' do
-  json("uptimeS": state.uptime_seconds)
-end
+    def post_url
+      '/api/shutter/set'
+    end
 
-get '/api/device/state' do
-  json(
-    "device": {
-      "deviceName": ENV.fetch('NAME'),
-      "type": TYPE,
-      "fv": '0.247',
-      "hv": '0.2',
-      "id": ID,
-      "ip": SERVER,
-      "apiLevel": API_LEVEL
+    def section_field
+      'shutter'
+    end
+
+    def type
+      'shutterBox'
+    end
+  end
+
+  def tick
+    state.tick
+  end
+
+  def state
+    State.instance
+  end
+
+  def uptime_response
+    { "uptimeS": uptime_seconds }
+  end
+
+  def device_state
+    {
+      "device": {
+        "deviceName": ENV.fetch('NAME'),
+        "type": self.class.type,
+        "fv": '0.247',
+        "hv": '0.2',
+        "id": '5a3e37e750b8',
+        "ip": self.class.ip,
+        "apiLevel": '20180604'
+      }
     }
-  )
-end
+  end
 
-def state_as_json
-  json(
-    "shutter": {
+  def response_state
+    {
       "state": 4,
       "currentPos": {
         "position": state.current,
@@ -72,42 +78,37 @@ def state_as_json
         "tilt": -1
       },
       "favPos": {
-        "position": 13,
+        "position": 13, # TODO: implement?
         "tilt": -1
       }
     }
-  )
-end
+  end
 
-get STATE_PATH do
-  state_as_json
-end
+  def from_post(data)
+    state.desired = data.fetch('shutter').fetch('desiredPos').fetch('position')
+    # TODO: implement tilt handling?
+  end
 
-get '/s/:command/:parameter' do
-  $stderr.puts "---------------------- #{params.inspect}"
-  halt 400 if params[:command] != 'p'
+  get '/s/:command/:parameter' do
+    command = params[:command]
+    value = params[:parameter]
+    halt(400, 'not implemented yet') if command != 'p'
 
-  percentage =
-    begin
-      Integer(params[:parameter])
-    rescue ArgumentError
-      warn "bad parameter: #{params[:parameter].inspect}"
-      halt 400, 'bad param'
-    end
+    percentage =
+      begin
+        Integer(value)
+      rescue ArgumentError
+        warn "bad parameter: #{command.inspect}"
+        halt 400, 'bad param'
+      end
 
-  halt(400, "out of range: #{percentage}") if percentage > 100
-  halt(400, "out of range: #{percentage}") if percentage < 0
+    halt(400, "out of range: #{percentage}") if percentage > 100
+    halt(400, "out of range: #{percentage}") if percentage.negative?
 
-  $stderr.puts "---------------------- #{percentage}"
+    state.desired = percentage
 
-  state.desired = percentage
-
-  state_as_json
-end
-
-Thread.new do
-  loop do
-    sleep 0.3
-    state.tick
+    state_as_json
   end
 end
+
+MyApp.run!

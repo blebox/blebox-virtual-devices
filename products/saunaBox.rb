@@ -1,35 +1,21 @@
 # frozen_string_literal: true
 
-require 'sinatra'
-require 'sinatra/json'
-require 'json'
+require 'singleton'
 
-SERVER = `/sbin/ip route`.lines[-1].split(' ')[-1]
-set :port, 80
-
-ID = 'aafe34db94f7'
-TYPE = 'saunaBox'
-STATE_PATH = '/api/heat/state'
-API_LEVEL = '20180604'
-
-STDERR.puts "#{TYPE} at #{SERVER}"
+require_relative '../app'
 
 class State
-  attr_reader :start
+  include Singleton
 
   attr_accessor :desired
+
   attr_reader :temperature
   attr_accessor :on
 
   def initialize
-    @start = Time.now.to_i
     @on = true
     @temperature = 2500
     @desired = 7126
-  end
-
-  def uptime_seconds
-    Time.now.to_i - start
   end
 
   def tick
@@ -41,7 +27,7 @@ class State
         @temperature -= 41 if desired < temperature
       end
     else
-      if @temperature > 2500
+      if temperature > 2500
         @temperature -= 9
       else
         @temperature += (Time.now.sec > 30 ? 3 : -3)
@@ -50,31 +36,53 @@ class State
   end
 end
 
-def state
-  $state ||= State.new
-end
+class MyApp < App
+  class << self
+    def state_url
+      '/api/heat/state'
+    end
 
-get '/api/device/uptime' do
-  json("uptimeS": state.uptime_seconds)
-end
+    def post_url
+      '/api/heat/set'
+    end
 
-get '/api/device/state' do
-  json(
-    "device": {
-      "deviceName": ENV.fetch('NAME'),
-      "type": TYPE,
-      "fv": '0.176',
-      "hv": '0.6',
-      "apiLevel": API_LEVEL,
-      "id": ID,
-      "ip": SERVER
+    def section_field
+      'heat'
+    end
+
+    def type
+      'saunaBox'
+    end
+  end
+
+  def tick
+    state.tick
+  end
+
+  def state
+    State.instance
+  end
+
+  def uptime_response
+    { "uptimeS": uptime_seconds }
+  end
+
+  def device_state
+    {
+      "device": {
+        "deviceName": ENV.fetch('NAME'),
+        "type": self.class.type,
+        "fv": '0.176',
+        "hv": '0.6',
+        "apiLevel": '20180604',
+        "id": '4afe34db94f7',
+        "ip": self.class.ip
+      }
     }
-  )
-end
+  end
 
-def state_as_json
-  json(
-    "heat": {
+  def response_state
+    {
       "state": state.on ? 1 : 0,
       "desiredTemp": state.desired,
       "sensors": [
@@ -88,41 +96,38 @@ def state_as_json
         }
       ]
     }
-  )
-end
-
-get STATE_PATH do
-  state_as_json
-end
-
-get '/s/t/:temperature' do
-  state.desired = Integer(params['temperature'])
-
-  state_as_json
-end
-
-post '/api/heat/set' do
-  data = JSON.parse(request.body.read)
-  data = data.fetch('heat')
-
-  begin
-    state.on = data.fetch('state') == 1
-  rescue KeyError
-    # TODO: find matching error status here
   end
 
-  begin
-    state.desired = data.fetch('desiredTemp')
-  rescue KeyError
-    # TODO: find matching error status here
+  def from_post(data)
+    heat = data.fetch('heat')
+    state.on = heat.fetch('state') == 1
+
+    # handle optional temperature field
+    begin
+      state.desired = heat.fetch('desiredTemp')
+    rescue KeyError
+    end
   end
 
-  state_as_json
-end
+  get '/s/t/:temperature' do
+    state.desired = Integer(params[:temperature])
 
-Thread.new do
-  loop do
-    sleep 0.3
-    state.tick
+    state_as_json
+  end
+
+  get '/s/:command' do
+    command = params[:command]
+    case command
+    when '0', 'false'
+      state.on = false
+    when '1', 'true'
+      state.on = true
+    else
+      halt 400
+    end
+
+    state_as_json
   end
 end
+
+MyApp.run!
