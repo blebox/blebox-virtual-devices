@@ -12,20 +12,28 @@ Based on API docs here: https://technical.blebox.eu
 ## Usage
 
 1. Create a docker network:
-
-  $ docker network create blebox_sensors
+  
+```console
+$ docker network create blebox_sensors
+```
 
 2. Start the devices:
 
+  ```console
   $ docker-compose up
-
+  ```
+  
 3. List the devices:
 
+  ```console
   $ docker network inspect blebox_sensors
+  ```
 
-    or if you have `jq` installed:
+  or, if you have `jq` installed:
 
+  ```console
   $ docker network inspect blebox_sensors | jq '.[0]["Containers"] | map(.IPv4Address + " " + .Name)'
+  ```
 
 
 ## Testing
