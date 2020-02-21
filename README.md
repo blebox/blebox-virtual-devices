@@ -1,8 +1,10 @@
 # Virtual BleBox devices
 
-Designed to developers and maintainers who don't own actual BleBox devices.
+11 dockerized BleBox device emulators - designed to help integration developers and maintainers (who may not own actual BleBox devices).
 
-Only minimal features are implemented to help create and test basic integrations.
+Based on actual [BleBox home automation products](https://blebox.eu/products/?lang=en).
+
+(Only minimal features are implemented - to help quickly and reliably create and test basic integrations).
 
 Based on API docs here: https://technical.blebox.eu
 
