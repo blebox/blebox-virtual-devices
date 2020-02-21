@@ -11,7 +11,7 @@ Based on API docs here: https://technical.blebox.eu
 
 ## Usage
 
-1. Create a docker network:
+1. Create the docker network `blebox_sensors`:
   
 ```console
 $ docker network create blebox_sensors
@@ -38,7 +38,7 @@ $ docker network create blebox_sensors
 
 ## Testing
 
-1. Detect the device:
+1. Detect the device type/product:
 
   ```console
   $ curl -s http://172.20.0.4:80/api/device/state | jq
@@ -106,9 +106,18 @@ $ docker network create blebox_sensors
   $ curl -d '{"heat": { "state": 1, "desiredTemp": 6300 }}' -si "http://$(./find_box 'sauna'):80/api/heat/set"
   ```
 
+### Limitations
+
+- error codes may not be the same (not an issue in practice)
+- doesn't implement specific hardware/firmare versions (but BleBox maintains backward compatibility and upgrading firmware is recommended always)
+- default functionality is emulated (actual BleBox devices are highly configurable and rich with features - but those are better set using the BleBox Android/iOS apps)
+- lots of features are missing (the current ones should be sufficient - if not, let me know or create a PR)
+- no integration tests (yet)
+
+
 
 ### Contributing
 
 The usual. Open an issue, submit a PR, etc.
 
-Please report any differences from the way real BleBox devices behave.
+Please let me know if there are any differences from the way real BleBox devices behave.
