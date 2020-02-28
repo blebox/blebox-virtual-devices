@@ -9,15 +9,28 @@ class State
 
   attr_accessor :desired
   attr_reader :current
+  attr_reader :state
 
   def initialize
     @current = 0
     @desired = 0
+    @state = 3
   end
 
   def tick
     @current += 1 if desired > current
     @current -= 1 if desired < current
+
+    @state = calculate_state
+  end
+
+  def calculate_state
+    return 0 if desired < current
+    return 1 if desired > current
+    return 3 if current == 100
+    return 4 if current.zero?
+
+    2
   end
 end
 
@@ -68,7 +81,7 @@ class MyApp < App
 
   def response_state
     {
-      "state": 4,
+      "state": state.state,
       "currentPos": {
         "position": state.current,
         "tilt": -1
@@ -106,6 +119,23 @@ class MyApp < App
     halt(400, "out of range: #{percentage}") if percentage.negative?
 
     state.desired = percentage
+
+    state_as_json
+  end
+
+  get '/s/:command' do
+    command = params[:command]
+
+    case command
+    when 'u'
+      state.desired = 0
+    when 'd'
+      state.desired = 100
+    when 's'
+      state.desired = state.current
+    else
+      halt(400, "#{command.inspect} not implemented yet")
+    end
 
     state_as_json
   end
