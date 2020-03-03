@@ -11,10 +11,28 @@ class State
   attr_reader :current
   attr_reader :state
 
+  FULL_OPEN = 0
+  FULL_CLOSE = 100
+
+  STATE_DOWN_CLOSING = 0
+  STATE_UP_OPENING = 1
+  STATE_MANUALLY_STOPPED = 2
+  STATE_CLOSE_LIMIT = 3
+  STATE_OPEN_LIMIT = 4
+
+  # Visual (e.g. 75% = 75% closed):
+  #
+  # ____ (0) - open / upper limit
+  # ||||
+  # ||||
+  # ****
+  #
+  # ____ (100) - closed / lower limit
+
   def initialize
-    @current = 0
-    @desired = 0
-    @state = 3
+    @current = FULL_OPEN # full open
+    @desired = FULL_OPEN
+    @state = STATE_OPEN_LIMIT
   end
 
   def tick
@@ -25,12 +43,12 @@ class State
   end
 
   def calculate_state
-    return 0 if desired < current
-    return 1 if desired > current
-    return 3 if current == 100
-    return 4 if current.zero?
+    return STATE_DOWN_CLOSING if desired > current
+    return STATE_UP_OPENING if desired < current
+    return STATE_CLOSE_LIMIT if current == FULL_CLOSE
+    return STATE_OPEN_LIMIT if current == FULL_OPEN
 
-    2
+    STATE_MANUALLY_STOPPED
   end
 end
 
@@ -127,11 +145,11 @@ class MyApp < App
     command = params[:command]
 
     case command
-    when 'u'
-      state.desired = 0
-    when 'd'
-      state.desired = 100
-    when 's'
+    when 'u' # up
+      state.desired = State::FULL_OPEN
+    when 'd' # down
+      state.desired = State::FULL_CLOSE
+    when 's' # stop
       state.desired = state.current
     else
       halt(400, "#{command.inspect} not implemented yet")

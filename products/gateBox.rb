@@ -12,9 +12,13 @@ class State
 
   attr_reader :extra_button_type
 
+  # NOTE: inverted compared to gateController and shutterBox
+  FULL_OPEN = 100
+  FULL_CLOSE = 0
+
   def initialize
-    @current = 0
-    @desired = 0
+    @current = FULL_OPEN
+    @desired = FULL_OPEN
     @extra_button_type = 1 # stop
   end
 
@@ -24,7 +28,8 @@ class State
   end
 
   def primary
-    @desired = desired.zero? ? 100 : 0
+    # Toggle
+    @desired = desired == FULL_CLOSE ? FULL_OPEN : FULL_CLOSE
   end
 
   def secondary
