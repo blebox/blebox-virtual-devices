@@ -10,10 +10,10 @@ class State
   attr_reader :desired
   attr_reader :current
 
-  attr_accessor :last_color
+  attr_accessor :last_on_color
 
   def initialize
-    @last_color = @current = @desired = 'ff000000'
+    @last_on_color = @current = @desired = 'ff000000'
   end
 
   def tick
@@ -46,7 +46,7 @@ class State
   end
 
   def turn_on
-    @desired = last_color
+    @desired = last_on_color
   end
 
   def turn_off
@@ -58,7 +58,10 @@ class State
   end
 
   def desired=(new_color)
-    @desired = @last_color = new_color
+    @desired = new_color
+    off = "00000000"
+    @last_on_color = new_color unless new_color == off
+
   end
 end
 
@@ -121,6 +124,7 @@ class MyApp < App
     {
       "desiredColor": state.desired,
       "currentColor": state.current,
+      "lastOnColor": state.last_on_color,
       "fadeSpeed": 248,
       "effectSpeed": 2,
       "effectID": 3,
