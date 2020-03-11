@@ -59,9 +59,8 @@ class State
 
   def desired=(new_color)
     @desired = new_color
-    off = "00000000"
+    off = '00000000'
     @last_on_color = new_color unless new_color == off
-
   end
 end
 
@@ -107,7 +106,8 @@ class MyApp < App
         "type": self.class.type,
         "fv": '0.247',
         "hv": '0.2',
-        "id": '9afe34e750b8'
+        "id": '9afe34e750b8',
+        "apiLevel": '20180718' # latest: '20190808',
       },
       "network": {
         "ip": self.class.ip,

@@ -59,7 +59,8 @@ class MyApp < App
         "type": self.class.type,
         "fv": '0.247',
         "hv": '0.2',
-        "id": 'a13e37e750b8'
+        "id": 'a13e37e750b8',
+        "apiLevel": '20180718' # latest: '20180718'
       },
       "network": {
         "ip": self.class.ip,

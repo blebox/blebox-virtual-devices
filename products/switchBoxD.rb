@@ -59,7 +59,8 @@ class MyApp < App
         "fv": '0.247',
         "hv": '0.2',
         "id": '6334f7e750b8',
-        "ip": self.class.ip
+        "ip": self.class.ip,
+        "apiLevel": '20190808' # latest: '20190808'
       }
     }
   end
