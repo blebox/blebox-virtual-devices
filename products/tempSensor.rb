@@ -54,7 +54,7 @@ class MyApp < App
         "hv": '0.6',
         "id": '8afe34db9437',
         "ip": self.class.ip,
-        "apiLevel": '20180604'
+        "apiLevel": '20180604' # latest: '20180604'
       }
     }
   end

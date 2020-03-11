@@ -74,7 +74,7 @@ class MyApp < App
         "type": self.class.type,
         "fv": '0.176',
         "hv": '0.6',
-        "apiLevel": '20180604',
+        "apiLevel": '20180604', # latest: '20180604'
         "id": '4afe34db94f7',
         "ip": self.class.ip
       }

@@ -92,7 +92,7 @@ class MyApp < App
       "device": {
         "deviceName": ENV.fetch('NAME'),
         "type": self.class.type,
-        "apiLevel": '20180604',
+        "apiLevel": '20180604', # latest: '20190911'
         "fv": '0.247',
         "hv": '0.2',
         "id": '330ff7e750b8',
