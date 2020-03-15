@@ -57,17 +57,19 @@ class MyApp < App
         "fv": '0.247',
         "hv": '0.2',
         "id": '7334f7e750b8',
+        "ip": self.class.ip, # seems present only in new devices
         "apiLevel": '20180604' # latest: '20190808'
 
-      },
-      "network": {
-        "ip": self.class.ip,
-        "ssid": 'myWiFiNetwork',
-        "station_status": 5,
-        "apSSID": 'switchBox-ap',
-        "apPasswd": ''
-      },
-      "relays": response_state
+      }
+      # This section only exists in old versions
+      # "network": {
+      #  "ip": self.class.ip,
+      #  "ssid": 'myWiFiNetwork',
+      #  "station_status": 5,
+      #  "apSSID": 'switchBox-ap',
+      #  "apPasswd": ''
+      # },
+      # "relays": response_state
     }
   end
 
