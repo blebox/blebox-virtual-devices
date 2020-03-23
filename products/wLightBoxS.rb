@@ -63,7 +63,7 @@ class MyApp < App
         'apiLevel': '20180718', # latest: '20180718'
         "id": 'a13e37e750b8',
         'ip': '192.168.9.13',
-        'availableFv': None
+        'availableFv': nil
       }
     }
   end
