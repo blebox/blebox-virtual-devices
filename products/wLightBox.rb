@@ -104,29 +104,41 @@ class MyApp < App
       "device": {
         "deviceName": ENV.fetch('NAME'),
         "type": self.class.type,
-        "fv": '0.247',
-        "hv": '0.2',
+        "flavor": self.class.type,
+        "hv": 'smartLight-85mm-1.0',
+        "fv": '0.998.1.umdns.dgn',
+        "universe": 3,
         "id": '9afe34e750b8',
+        # 'ip': '192.168.0.20',
+        # 'availableFv': nil
+        # TODO: is the layout ok for this apiLevel version?
         "apiLevel": '20180718' # latest: '20190808',
-      },
-      "network": {
-        "ip": self.class.ip,
-        "ssid": 'myWiFiNetwork',
-        "station_status": 5,
-        "apSSID": 'wLightBox-ap',
-        "apPasswd": ''
-      },
-      "rgbw": response_state
+      }
     }
   end
 
   def response_state
+    # NOTE: apiLevel "20190808":
+    # {
+    #  'desiredColor': '000000ff',
+    #  'currentColor': '000000ff',
+    #  'lastOnColor': '000000ff',
+    #  'durationsMs': {
+    #    'colorFade': 2975,
+    #    'effectFade': 1000,
+    #    'effectStep': 1000
+    #  },
+    #  'effectID': 0,
+    #  'colorMode': 1
+    # }
+
     {
       "desiredColor": state.desired,
       "currentColor": state.current,
       "lastOnColor": state.last_on_color,
-      "fadeSpeed": 248,
-      "effectSpeed": 2,
+      # TODO: newer durationMs structure here (like above)
+      # "fadeSpeed": 248,
+      # "effectSpeed": 2,
       "effectID": 3,
       "colorMode": 3
     }
