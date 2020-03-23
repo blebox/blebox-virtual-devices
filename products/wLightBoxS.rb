@@ -54,30 +54,26 @@ class MyApp < App
 
   def device_state
     {
-      "device": {
-        "deviceName": ENV.fetch('NAME'),
-        "type": self.class.type,
-        "fv": '0.247',
-        "hv": '0.2',
+      'device': {
+        'deviceName': ENV.fetch('NAME'),
+        'type': 'wLightBoxS',
+        'fv': '0.924',
+        'hv': '0.1',
+        'universe': 0,
+        'apiLevel': '20180718', # latest: '20180718'
         "id": 'a13e37e750b8',
-        "apiLevel": '20180718' # latest: '20180718'
-      },
-      "network": {
-        "ip": self.class.ip,
-        "ssid": 'myWiFiNetwork',
-        "station_status": 5,
-        "apSSID": 'wlightboxs-ap',
-        "apPasswd": ''
-      },
-      "light": response_state
+        'ip': '192.168.9.13',
+        'availableFv': None
+      }
     }
   end
 
   def response_state
     {
-      "currentColor": format('%02X', state.current),
-      "desiredColor": format('%02X', state.desired)
+      "currentColor": format('%02x', state.current),
+      "desiredColor": format('%02x', state.desired)
       # TODO: add fadeSpeed, etc.
+      # "fadeSpeed": format('%d', state.fade_speed)
     }
   end
 
