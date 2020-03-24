@@ -53,6 +53,11 @@ services:
     environment:
       MAIN_APP_FILE: products/wLightBoxS.rb
       NAME: "My lightBoxS 1"
+  switchBox0: # old version
+    << : *common
+    environment:
+      MAIN_APP_FILE: products/switchBox0.rb
+      NAME: "My switchBox0 1"
   switchBox:
     << : *common
     environment:

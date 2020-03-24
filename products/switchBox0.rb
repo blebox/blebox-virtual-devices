@@ -59,9 +59,13 @@ class MyApp < App
         "universe": 0,
         "id": '7334f7e750b8',
         "ip": self.class.ip, # seems present only in new devices
-        "apiLevel": '20190808' # see switchBox0 for earlier versions
+        "apiLevel": '20180604' # up to (but not including): '20190808'
       }
     }
+  end
+
+  def state_as_json
+    json(response_state)
   end
 
   def response_state
