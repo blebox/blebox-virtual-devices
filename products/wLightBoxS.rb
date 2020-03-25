@@ -28,7 +28,7 @@ class MyApp < App
     end
 
     def post_url
-      '/api/rgbw/set'
+      '/api/light/set'
     end
 
     def section_field
