@@ -3,8 +3,12 @@
 set -o pipefail
 set -eu
 
-[ -n "$1" ] || { echo >&2 "Usage: $(basename $0) <product_name>"; exit 1; }
+name="${1:-}"
 
-name="$1"
 
-docker network inspect blebox_sensors | jq ".[0][\"Containers\"][] | select(.Name | contains(\"$name\")) | .IPv4Address" | cut -d'"' -f2-|cut -d/ -f1
+if [ -z "$name" ]; then
+  echo >&2 "No product name given. Showing all entries..."
+  docker network inspect blebox_sensors | jq '.[0]["Containers"][] | (.IPv4Address + "  " + .Name)'
+else
+  docker network inspect blebox_sensors | jq ".[0][\"Containers\"][] | select(.Name | contains(\"$name\")) | .IPv4Address" | cut -d'"' -f2-|cut -d/ -f1
+fi
