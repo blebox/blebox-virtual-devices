@@ -98,6 +98,25 @@ class MyApp < App
     }
   end
 
+  def extended_response_state
+    {
+      "state": state.on ? 1 : 0,
+      "desiredTemp": state.desired,
+      "maximumTemp": 12_500,
+      "minimumTemp": -5500,
+      "sensors": [
+        {
+          "type": 'temperature',
+          "id": 0,
+          "value": state.temperature,
+          "trend": 0,
+          "state": 2,
+          "elapsedTimeS": 0
+        }
+      ]
+    }
+  end
+
   def from_post(data)
     heat = data.fetch('heat')
     state.on = heat.fetch('state') == 1
@@ -127,6 +146,10 @@ class MyApp < App
     end
 
     state_as_json
+  end
+
+  get '/api/heat/extended/state' do
+    json(self.class.section_field => extended_response_state)
   end
 end
 
