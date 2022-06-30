@@ -1,7 +1,7 @@
 version: '3.4'
 x-common:
   &common
-  image: erikap/ruby-sinatra
+  image: erikap/ruby-sinatra:ruby2.5-latest
   volumes:
     - .:/usr/src/app
   networks:
